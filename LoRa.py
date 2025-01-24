@@ -289,10 +289,10 @@ in transmissions levels.
         """
             Set the Listen Before Talk (LBT) parameters.
 
-            :param scan_period: Decimal number representing the scan duration of a single channel
-            :param threshold: Signed decimal number representing the threshold above which channel is assumed to be occupied
-            :param num_of_samples: Decimal number representing the number of RSSI read samples for a single channel
-            :param transmit_on: Bool value for radio to decide if the transmit request is LBT based
+        :param scan_period: Scan duration.
+        :param threshold: RSSI threshold.
+        :param num_of_samples: Number of samples.
+        :param transmit_on: Whether to enable LBT-based transmission.
         """
 
         return self.send_command(f"radio set lbt {scan_period} {threshold} {num_of_samples} {transmit_on}")
