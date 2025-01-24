@@ -195,8 +195,13 @@ class CanSat_LoRa:
         while True:
             response = self.serial.readline().decode().strip()
             if response.startswith("radio_rx"):
-                data = bytes.fromhex(response.split(" ")[1]).decode()
-                callback(data)
+                try:
+                    data = bytes.fromhex(response.split(" ")[1]).decode()
+            
+                    callback(data)
+                except:
+                    print("Error")
+
 
     def radio_transmit(self, data, count=1):
         """
@@ -240,7 +245,7 @@ class CanSat_LoRa:
         :param transmit_on: Whether to enable LBT-based transmission.
         """
         return self.send_command(f"radio set lbt {scan_period} {threshold} {num_of_samples} {int(transmit_on)}")
-
+    
     def get_listen_before_talk(self):
         """Returns the current LBT settings."""
         return self.send_command("radio get lbt")
@@ -268,9 +273,6 @@ def main():
     print("Power:", lora.radio_get_power())
     print("Modulation:", lora.radio_get_modulation())
     print("CRC:", lora.radio_get_crc())
-    print("LBT:", lora.get_listen_before_talk())
-    print("SNR:", lora.radio_get_signal_noise_ratio())
-    print("RSSI:", lora.radio_get_packet_rssi())
     print("PABOOST:", lora.radio_get_paboost())
     print("SF:", lora.radio_get_sf())
 
@@ -279,9 +281,20 @@ def main():
     lora.radio_set_paboost("on")
     lora.radio_set_power(20)
 
+    lora.radio_set_crc("off")
     time.sleep(1)
 
-    print(lora.radio_transmit("Hello, world!"))
+
+    def save_data(data):
+        rssi = lora.radio_get_packet_rssi()
+        snr = lora.radio_get_signal_noise_ratio()
+        data = f"{data} RSSI: {rssi} SNR: {snr}"
+
+        with open("data.txt", "a") as f:
+            f.write(data + "\n")
+
+        print(data)
+    lora.radio_continuous_reception(save_data)
 
     lora.close()
 
