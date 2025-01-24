@@ -245,6 +245,20 @@ class CanSat_LoRa:
         """Returns the current LBT settings."""
         return self.send_command("radio get lbt")
 
+    def radio_set_sf(self, spreading_factor):
+        """
+        Sets the spreading factor.
+
+        :param spreading_factor: Spreading factor (7 to 12).
+        """
+        if not (7 <= spreading_factor <= 12):
+            raise ValueError("Spreading factor must be between 7 and 12.")
+        return self.send_command(f"radio set sf sf{spreading_factor}")
+
+    def radio_get_sf(self):
+        """Returns the current spreading factor."""
+        return self.send_command("radio get sf")
+    
 def main():
     lora = CanSat_LoRa()
     lora.find_and_open()
@@ -258,6 +272,7 @@ def main():
     print("SNR:", lora.radio_get_signal_noise_ratio())
     print("RSSI:", lora.radio_get_packet_rssi())
     print("PABOOST:", lora.radio_get_paboost())
+    print("SF:", lora.radio_get_sf())
 
     lora.radio_set_frequency_mhz(868.35)
     lora.radio_set_modulation("lora")
